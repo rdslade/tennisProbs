@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <script type="text/javascript" src="tennis_probs.js"></script>
+        <script type="text/javascript" src="tennis_probs.js"></script>
+        <link rel = "stylesheet" type = "text/css" href = "style.css" />
+    </head>
+    
+    <body>
+        <div class="scoreboard">
+            <button class="score-button" onclick="updateScore('a')">Win</button>
+            <div id="score-container">
+                <div class="prob" id="aprob">0</div>
+                <div class="score" id='ascore'>0</div>
+                <div style="display:inline;font-size:50px;">-</div>
+                <div class="score" id='bscore'>0</div>
+                <div class="prob" id="bprob">0</div>
+            </div>
+            <button class="score-button" onclick="updateScore('b')">Win</button>
+        </div>
+    </body>
+    <script>
+        function updateScore(player){
+            if(player==='a'){
+                if(cura==3){
+                    if(curb!=3 && curb!=4)
+                        cura+=2;
+                    else if(curb==3)
+                        cura++;  
+                }
+                else
+                    cura++;
+                if(curb==4)
+                    curb--;
+                document.getElementById('ascore').innerHTML = tennisScores[cura];
+                document.getElementById('bscore').innerHTML = tennisScores[curb];
+                document.getElementById('aprob').innerHTML =  gameProb(netPointPercentage(aServePointsWon,bReturnPointsWon),cura,curb);
+            }
+            else{
+                if(curb==3){
+                    if(cura!=3 && cura!=4)
+                        curb+=2;
+                    else if(cura==3)
+                        curb++;  
+                }
+                else
+                    curb++;
+                if(cura==4)
+                    cura--;
+                document.getElementById('ascore').innerHTML = tennisScores[cura];
+                document.getElementById('bscore').innerHTML = tennisScores[curb];
+            }
+        }
+    </script>
+</html>
