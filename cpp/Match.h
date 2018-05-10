@@ -12,6 +12,10 @@ public:
               double returnPercentage_in);
   MatchPlayer(const std::string &name_in);
   bool isServer() const;
+  int getSets() const;
+  int getGames() const;
+  int getPoints() const;
+  void setServe(bool s);
 private:
   bool serve;
   int points;
@@ -23,11 +27,14 @@ class Match{
 public:
   Match();
   Match(const MatchPlayer a_in, const MatchPlayer b_in);
+  MatchPlayer & getPlayer(int index);
 private:
-  Player a;
-  Player b;
+  MatchPlayer a;
+  MatchPlayer b;
   double serverNetP;
 };
+
+std::ostream& operator<<(std::ostream& os, Match& m);
 
 
 #endif
