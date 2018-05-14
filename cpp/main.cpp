@@ -31,6 +31,17 @@ void printBothPlayers(MatchPlayer &a, MatchPlayer &b){
   cout << "1 - " << b.getName() << std::endl;
   cout << "Enter the number corresponding to the first server: ";
 }
+void winSet(int player, Match &m){
+  MatchPlayer &a = m.getPlayer(0);
+  MatchPlayer &b = m.getPlayer(1);
+  if(player == 0){
+    a.winSet();
+  }
+  else if(player == 1){
+    b.winSet();
+  }
+  m.resetSet();
+}
 void winGame(int player, Match &m){
   MatchPlayer &a = m.getPlayer(0);
   MatchPlayer &b = m.getPlayer(1);
@@ -41,6 +52,18 @@ void winGame(int player, Match &m){
     b.winGame();
   }
   m.resetGame();
+}
+void checkSetsInvariants(Match &m){
+  MatchPlayer &a = m.getPlayer(0);
+  MatchPlayer &b = m.getPlayer(1);
+  int aGames = a.getGames();
+  int bGames = b.getGames();
+  if(aGames == 7 || (aGames == 6 && bGames <= 4)){
+    winSet(0, m);
+  }
+  else if(bGames == 7 || (bGames == 6 && aGames <= 4)){
+    winSet(1, m);
+  }
 }
 void checkGameInvariants(Match &m){
   MatchPlayer &a = m.getPlayer(0);
@@ -65,7 +88,7 @@ int checkMatchInvariants(Match &m){
   MatchPlayer &a = m.getPlayer(0);
   MatchPlayer &b = m.getPlayer(1);
   checkGameInvariants(m);
-  //checkSetsInvariants(m);
+  checkSetsInvariants(m);
   if(a.getSets() == 2 || b.getSets() == 2){
     return 1;
   }
@@ -73,12 +96,12 @@ int checkMatchInvariants(Match &m){
     return 0;
   }
 }
-void playPoint(Match &m){
+int playPoint(Match &m){
   MatchPlayer &a = m.getPlayer(0);
   MatchPlayer &b = m.getPlayer(1);
   int winner;
   printBothPlayers(a,b);
-  cout << "Enter the player who won the last point: ";
+  cout << "Enter the player who won the point: ";
   cin >> winner;
   if(winner == 0){
     a.winPoint();
@@ -86,7 +109,7 @@ void playPoint(Match &m){
   else{
     b.winPoint();
   }
-  checkMatchInvariants(m);
+  return checkMatchInvariants(m);
 }
 void init_server(Match &m){
   MatchPlayer &a = m.getPlayer(0);
@@ -132,6 +155,12 @@ int main(){
   bool matchDone = false;
   while(!matchDone){
     cout << match << endl;
-    playPoint(match);
+    matchDone = playPoint(match);
   }
+  cout << match << endl << endl;
+  MatchPlayer &aP = match.getPlayer(0);
+  MatchPlayer &bP = match.getPlayer(1);
+  MatchPlayer& winner = (aP.getSets() > bP.getSets()) ? aP : bP;
+  MatchPlayer& loser = (aP.getSets() > bP.getSets()) ? bP : aP;
+  cout << winner.getName() << " def. " << loser.getName() << " " << winner.getSets() << "-" << loser.getSets() << endl;
 }
