@@ -37,6 +37,8 @@ public:
   void resetGame();
   void resetSet();
   void setDuece();
+  double getServerGameProb() const;
+  void setServerNetP();
 private:
   MatchPlayer a;
   MatchPlayer b;

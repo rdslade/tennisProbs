@@ -122,6 +122,7 @@ void init_server(Match &m){
   }
   a.setServe(!server);
   b.setServe(server);
+  m.setServerNetP();
   cout << std::endl;
 }
 int main(){
