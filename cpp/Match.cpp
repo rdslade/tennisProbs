@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "stats.h"
 #include <iomanip>
+#include <cmath>
 
 const std::string TENNISPOINTS[5] = {"0", "15", "30", "40", "AD"};
 /* -------------------------------------------------------------------------- */
@@ -60,6 +61,15 @@ MatchPlayer & Match::getPlayer(int index){
 void Match::resetGame(){
   a.resetGame();
   b.resetGame();
+  if(a.isServer()){
+    a.setServe(false);
+    b.setServe(true);
+  }
+  else{
+    a.setServe(true);
+    b.setServe(false);
+  }
+  setServerNetP();
 }
 void Match::resetSet(){
   a.resetSet();
@@ -69,32 +79,55 @@ void Match::setDuece(){
   a.setDuece();
   b.setDuece();
 }
+void Match::setServerNetP(){
+  const MatchPlayer &server = (a.isServer()) ? a : b;
+  const MatchPlayer &returner = (a.isServer()) ? b : a;
+  serverNetP = server.getServePercentage() / (server.getServePercentage() + returner.getReturnPercentage());
+}
+double Match::getServerGameProb() const{
+  const MatchPlayer &server = (a.isServer()) ? a : b;
+  const MatchPlayer &returner = (a.isServer()) ? b : a;
+  double returnNetP = 1 - serverNetP;
+  double sum = 0;
+  for(int n = 0; n < 3 - returner.getPoints(); n++){
+      sum += pow(serverNetP, 4 - server.getPoints()) *
+      pow(returnNetP, n) *
+      nchoosek(3 - server.getPoints() + n, n);
+  }
+  sum += pow(serverNetP, 2) / (1 - 2*serverNetP*returnNetP) *
+          nchoosek(6 - returner.getPoints() - server.getPoints(), 3 - returner.getPoints()) *
+          pow(serverNetP, 3 - server.getPoints()) *
+          pow(returnNetP, 3 - returner.getPoints());
+  return sum;
+}
 /* -------------------------------------------------------------------------- */
 void fillEdgeScoreboard(std::ostream & os, char fill){
-  os << std::setfill(fill) << std::setw(48);
+  os << std::setfill(fill) << std::setw(55);
   os << "" << std::endl;
 }
-std::string constructLine(MatchPlayer &p){
+std::string constructLine(MatchPlayer &p, double probability){
   std::string serve = p.isServer() ? "   *   " : "       ";
   std::string name = p.getName();
   std::string points = TENNISPOINTS[p.getPoints()];
   std::string games = std::to_string(p.getGames());
   std::string sets = std::to_string(p.getSets());
+  std::string prob = (p.isServer()) ? std::to_string(probability) : std::to_string(1 - probability);
   name.resize(14, ' ');
   points.resize(8, ' ');
   games.resize(7, ' ');
   sets.resize(6, ' ');
-  return "|" + serve + "|" + name + "|" + sets + "|" + games + "|" + points + "|";
+  prob.resize(7, ' ');
+  return "|" + serve + "|" + name + "|" + sets + "|" + games + "|" + points + "|" + prob + "|";
 }
 std::ostream& operator<<(std::ostream& os, Match& m){
   MatchPlayer a = m.getPlayer(0);
   MatchPlayer b = m.getPlayer(1);
   fillEdgeScoreboard(os, '~');
-  os << "| Serve |     Name     | Sets | Games | Points |" << std::endl;
+  os << "| Serve |     Name     | Sets | Games | Points | Prob |" << std::endl;
   fillEdgeScoreboard(os, '-');
-  os << constructLine(a) << std::endl;
+  os << constructLine(a, m.getServerGameProb()) << std::endl;
   fillEdgeScoreboard(os, '-');
-  os << constructLine(b) << std::endl;
+  os << constructLine(b, m.getServerGameProb()) << std::endl;
   fillEdgeScoreboard(os, '~');
   return os;
 }
