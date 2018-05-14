@@ -16,6 +16,12 @@ public:
   int getGames() const;
   int getPoints() const;
   void setServe(bool s);
+  void winPoint();
+  void winGame();
+  void winSet();
+  void resetGame();
+  void resetSet();
+  void setDuece();
 private:
   bool serve;
   int points;
@@ -28,6 +34,9 @@ public:
   Match();
   Match(const MatchPlayer a_in, const MatchPlayer b_in);
   MatchPlayer & getPlayer(int index);
+  void resetGame();
+  void resetSet();
+  void setDuece();
 private:
   MatchPlayer a;
   MatchPlayer b;

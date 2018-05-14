@@ -5,6 +5,7 @@
 #include "stats.h"
 #include <iomanip>
 
+const std::string TENNISPOINTS[5] = {"0", "15", "30", "40", "AD"};
 /* -------------------------------------------------------------------------- */
 MatchPlayer::MatchPlayer()
   : Player(), serve(false), points(0), games(0), sets(0){}
@@ -29,6 +30,25 @@ int MatchPlayer::getPoints() const{
 void MatchPlayer::setServe(bool s){
   serve = s;
 }
+void MatchPlayer::winPoint(){
+  points++;
+}
+void MatchPlayer::winGame(){
+  games++;
+}
+void MatchPlayer::winSet(){
+  sets++;
+}
+void MatchPlayer::resetGame(){
+  points = 0;
+}
+void MatchPlayer::resetSet(){
+  games = 0;
+  resetGame();
+}
+void MatchPlayer::setDuece(){
+  points = 3;
+}
 /* -------------------------------------------------------------------------- */
 Match::Match() : a(MatchPlayer()), b(MatchPlayer()), serverNetP(0) {}
 Match::Match(const MatchPlayer a_in, const MatchPlayer b_in)
@@ -36,6 +56,18 @@ Match::Match(const MatchPlayer a_in, const MatchPlayer b_in)
 MatchPlayer & Match::getPlayer(int index){
   if(!index){ return a; }
   else{ return b; }
+}
+void Match::resetGame(){
+  a.resetGame();
+  b.resetGame();
+}
+void Match::resetSet(){
+  a.resetSet();
+  b.resetSet();
+}
+void Match::setDuece(){
+  a.setDuece();
+  b.setDuece();
 }
 /* -------------------------------------------------------------------------- */
 void fillEdgeScoreboard(std::ostream & os, char fill){
@@ -45,7 +77,7 @@ void fillEdgeScoreboard(std::ostream & os, char fill){
 std::string constructLine(MatchPlayer &p){
   std::string serve = p.isServer() ? "   *   " : "       ";
   std::string name = p.getName();
-  std::string points = std::to_string(p.getPoints());
+  std::string points = TENNISPOINTS[p.getPoints()];
   std::string games = std::to_string(p.getGames());
   std::string sets = std::to_string(p.getSets());
   name.resize(14, ' ');
