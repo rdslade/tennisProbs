@@ -116,7 +116,7 @@ std::string constructLine(MatchPlayer &p, double probability){
   points.resize(8, ' ');
   games.resize(7, ' ');
   sets.resize(6, ' ');
-  prob.resize(7, ' ');
+  prob.resize(6, ' ');
   return "|" + serve + "|" + name + "|" + sets + "|" + games + "|" + points + "|" + prob + "|";
 }
 std::ostream& operator<<(std::ostream& os, Match& m){

@@ -29,7 +29,6 @@ void init_player(string &a_name, double &a_serve, double &a_ret){
 void printBothPlayers(MatchPlayer &a, MatchPlayer &b){
   cout << "0 - " << a.getName() << std::endl;
   cout << "1 - " << b.getName() << std::endl;
-  cout << "Enter the number corresponding to the first server: ";
 }
 void winSet(int player, Match &m){
   MatchPlayer &a = m.getPlayer(0);
@@ -115,6 +114,7 @@ void init_server(Match &m){
   MatchPlayer &a = m.getPlayer(0);
   MatchPlayer &b = m.getPlayer(1);
   printBothPlayers(a,b);
+  cout << "Enter the number corresponding to the first server: ";
   int server;
   cin >> server;
   if(server != 0 && server != 1){
