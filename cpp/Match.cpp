@@ -88,16 +88,26 @@ double Match::getServerGameProb() const{
   const MatchPlayer &server = (a.isServer()) ? a : b;
   const MatchPlayer &returner = (a.isServer()) ? b : a;
   double returnNetP = 1 - serverNetP;
+  int serverPoints = server.getPoints();
+  int returnerPoints = returner.getPoints();
+  if(serverPoints == 4 && returnerPoints == 3){
+    serverPoints = 3;
+    returnerPoints = 2;
+  }
+  else if(returnerPoints == 4 && serverPoints == 3){
+    returnerPoints = 3;
+    serverPoints = 2;
+  }
   double sum = 0;
-  for(int n = 0; n < 3 - returner.getPoints(); n++){
-      sum += pow(serverNetP, 4 - server.getPoints()) *
+  for(int n = 0; n < 3 - returnerPoints; n++){
+      sum += pow(serverNetP, 4 - serverPoints) *
       pow(returnNetP, n) *
-      nchoosek(3 - server.getPoints() + n, n);
+      nchoosek(3 - serverPoints + n, n);
   }
   sum += pow(serverNetP, 2) / (1 - 2*serverNetP*returnNetP) *
-          nchoosek(6 - returner.getPoints() - server.getPoints(), 3 - returner.getPoints()) *
-          pow(serverNetP, 3 - server.getPoints()) *
-          pow(returnNetP, 3 - returner.getPoints());
+          nchoosek(6 - returnerPoints - serverPoints, 3 - returnerPoints) *
+          pow(serverNetP, 3 - serverPoints) *
+          pow(returnNetP, 3 - returnerPoints);
   return sum;
 }
 /* -------------------------------------------------------------------------- */
