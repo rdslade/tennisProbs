@@ -37,7 +37,8 @@ public:
   void resetGame();
   void resetSet();
   void setDuece();
-  double getServerGameProb() const;
+  double getServerGameProb(const MatchPlayer &server, const MatchPlayer &returner) const;
+  double getCurrentGameProb() const;
   void setServerNetP();
 private:
   MatchPlayer a;

@@ -84,9 +84,7 @@ void Match::setServerNetP(){
   const MatchPlayer &returner = (a.isServer()) ? b : a;
   serverNetP = server.getServePercentage() / (server.getServePercentage() + returner.getReturnPercentage());
 }
-double Match::getServerGameProb() const{
-  const MatchPlayer &server = (a.isServer()) ? a : b;
-  const MatchPlayer &returner = (a.isServer()) ? b : a;
+double Match::getServerGameProb(const MatchPlayer &server, const MatchPlayer &returner) const{
   double returnNetP = 1 - serverNetP;
   int serverPoints = server.getPoints();
   int returnerPoints = returner.getPoints();
@@ -109,6 +107,11 @@ double Match::getServerGameProb() const{
           pow(serverNetP, 3 - serverPoints) *
           pow(returnNetP, 3 - returnerPoints);
   return sum;
+}
+double Match::getCurrentGameProb() const{
+  const MatchPlayer &server = (a.isServer()) ? a : b;
+  const MatchPlayer &returner = (a.isServer()) ? b : a;
+  return getServerGameProb(server, returner);
 }
 /* -------------------------------------------------------------------------- */
 void fillEdgeScoreboard(std::ostream & os, char fill){
@@ -135,9 +138,9 @@ std::ostream& operator<<(std::ostream& os, Match& m){
   fillEdgeScoreboard(os, '~');
   os << "| Serve |     Name     | Sets | Games | Points | Prob |" << std::endl;
   fillEdgeScoreboard(os, '-');
-  os << constructLine(a, m.getServerGameProb()) << std::endl;
+  os << constructLine(a, m.getCurrentGameProb()) << std::endl;
   fillEdgeScoreboard(os, '-');
-  os << constructLine(b, m.getServerGameProb()) << std::endl;
+  os << constructLine(b, m.getCurrentGameProb()) << std::endl;
   fillEdgeScoreboard(os, '~');
   return os;
 }
