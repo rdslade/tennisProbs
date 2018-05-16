@@ -84,10 +84,9 @@ void Match::setServerNetP(){
   const MatchPlayer &returner = (a.isServer()) ? b : a;
   serverNetP = server.getServePercentage() / (server.getServePercentage() + returner.getReturnPercentage());
 }
-double Match::getServerGameProb(const MatchPlayer &server, const MatchPlayer &returner) const{
+double Match::getServerGameProb(const MatchPlayer &server, const MatchPlayer &returner,
+  int serverPoints, int returnerPoints) const{
   double returnNetP = 1 - serverNetP;
-  int serverPoints = server.getPoints();
-  int returnerPoints = returner.getPoints();
   if(serverPoints == 4 && returnerPoints == 3){
     serverPoints = 3;
     returnerPoints = 2;
@@ -111,7 +110,7 @@ double Match::getServerGameProb(const MatchPlayer &server, const MatchPlayer &re
 double Match::getCurrentGameProb() const{
   const MatchPlayer &server = (a.isServer()) ? a : b;
   const MatchPlayer &returner = (a.isServer()) ? b : a;
-  return getServerGameProb(server, returner);
+  return getServerGameProb(server, returner, server.getPoints(), returner.getPoints());
 }
 /* -------------------------------------------------------------------------- */
 void fillEdgeScoreboard(std::ostream & os, char fill){
