@@ -37,8 +37,7 @@ public:
   void resetGame();
   void resetSet();
   void setDuece();
-  double getServerGameProb(const MatchPlayer &server, const MatchPlayer &returner,
-    int serverPoints, int returnerPoints) const;
+  double getServerGameProb(int serverPoints, int returnerPoints) const;
   double getCurrentGameProb() const;
   void setServerNetP();
 private:

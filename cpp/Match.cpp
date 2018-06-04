@@ -84,33 +84,25 @@ void Match::setServerNetP(){
   const MatchPlayer &returner = (a.isServer()) ? b : a;
   serverNetP = server.getServePercentage() / (server.getServePercentage() + returner.getReturnPercentage());
 }
-double Match::getServerGameProb(const MatchPlayer &server, const MatchPlayer &returner,
-  int serverPoints, int returnerPoints) const{
-  double returnNetP = 1 - serverNetP;
-  if(serverPoints == 4 && returnerPoints == 3){
-    serverPoints = 3;
-    returnerPoints = 2;
+double Match::getServerGameProb(int sPoints, int rPoints) const{
+  if(sPoints >= 4 && rPoints <= 2){
+    return 1;
   }
-  else if(returnerPoints == 4 && serverPoints == 3){
-    returnerPoints = 3;
-    serverPoints = 2;
+  else if(rPoints >= 4 && sPoints <= 2){
+    return 0;
   }
-  double sum = 0;
-  for(int n = 0; n < 3 - returnerPoints; n++){
-      sum += pow(serverNetP, 4 - serverPoints) *
-      pow(returnNetP, n) *
-      nchoosek(3 - serverPoints + n, n);
+  else if(rPoints == 3 && sPoints == 3){
+    double snps = serverNetP * serverNetP;
+    double rnps = (1 - serverNetP) * (1 - serverNetP);
+    return snps / (snps + rnps);
   }
-  sum += pow(serverNetP, 2) / (1 - 2*serverNetP*returnNetP) *
-          nchoosek(6 - returnerPoints - serverPoints, 3 - returnerPoints) *
-          pow(serverNetP, 3 - serverPoints) *
-          pow(returnNetP, 3 - returnerPoints);
-  return sum;
+   return serverNetP * getServerGameProb(sPoints + 1, rPoints) +
+         (1 - serverNetP) * getServerGameProb(sPoints, rPoints + 1);
 }
 double Match::getCurrentGameProb() const{
   const MatchPlayer &server = (a.isServer()) ? a : b;
   const MatchPlayer &returner = (a.isServer()) ? b : a;
-  return getServerGameProb(server, returner, server.getPoints(), returner.getPoints());
+  return getServerGameProb(server.getPoints(), returner.getPoints());
 }
 /* -------------------------------------------------------------------------- */
 void fillEdgeScoreboard(std::ostream & os, char fill){
